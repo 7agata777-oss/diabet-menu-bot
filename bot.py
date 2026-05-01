@@ -1,5 +1,5 @@
 import asyncio
-import logging 
+import logging
 import os
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F

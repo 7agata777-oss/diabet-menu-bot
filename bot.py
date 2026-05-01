@@ -1,6 +1,7 @@
 import asyncio
 import logging 
 import os
+from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
@@ -207,6 +208,7 @@ async def process_activity(message: types.Message, state: FSMContext):
     answer = (
         f"📋 Ваша суточная норма калорий: **{daily_calories} ккал**\n\n"
         + format_menu(menu, total)
+        
         + "\n\n⚠️ Меню является примером и не заменяет назначения врача. "
           "При диабете обязательно контролируйте уровень сахара и консультируйтесь со специалистом."
     )
@@ -223,8 +225,18 @@ async def echo(message: types.Message):
     await message.answer("Напишите /start, чтобы получить меню на сегодня.")
 
 # ---- Запуск ----
+
 async def main():
+    # Простой веб-сервер, чтобы Render видел открытый порт
+    app = web.Application()
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    # Запуск поллинга бота
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+        asyncio.run(main())
+    
